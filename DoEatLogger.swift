@@ -24,7 +24,8 @@ let defaultTags = ["doeat", "journal alimentaire", "cétogène"]
 
 // the entry prefix
 
-let entryPrefix = "mangé:"
+let foodPrefix = "mangé:"
+let symptomPrefix = "symptôme:"
 
 /* ********************************* */
 
@@ -39,7 +40,7 @@ let entryPrefix = "mangé:"
 // I initialize it with an example of something the user could enter
 // for testing. 
 
-var argument = "-t breakfast @œufs et bacon, café"
+var argument = "-s afternoon @cramps"
 #if swift(>=4.0)
 	if CommandLine.arguments.count > 1 {
 		argument = CommandLine.arguments[1]
@@ -74,13 +75,20 @@ for defaulTag in defaultTags {
 
 //-- Test if tags are present
 
-// weHaveTags is true if there are tags present
+// weHaveFoodTags is true if the `-t` prefix is present
 
-let weHaveTags = argument.hasPrefix("-t")
+let weHaveFoodTags = argument.hasPrefix("-t")
+
+// weHaveSymptomsTags is true if the `-s` prefix is present
+
+let weHaveSymptomsTags = argument.hasPrefix("-s")
+if weHaveSymptomsTags {
+	outputString += "symptôme "
+}
 
 //-- Process tags if present, otherwise just pass the input
 
-if weHaveTags {
+if weHaveFoodTags || weHaveSymptomsTags {
 	
 	// find the index of the tags separator
 	
@@ -171,14 +179,18 @@ if weHaveTags {
 		
 } else {
 	
-	// no tags, so just pass the input string (food) as received
+	// no tags, so just pass the input string (food or symptom) as received
 	
 	food = argument
 }
 
-// Add the food to the output string (enclosed in quotes to prevent the CLI to interpret special characters)
+// Add the food/symptom to the output string (enclosed in quotes to prevent the CLI to interpret special characters)
 
-outputString += " -- new" + " \"" + entryPrefix + " " + food + "\""
+if weHaveSymptomsTags {
+	outputString += " -- new" + " \"" + symptomPrefix + " " + food + "\""
+} else {
+	outputString += " -- new" + " \"" + foodPrefix + " " + food + "\""
+}
 
 // pass the result of the script, we suppress the newline character in the output
 
