@@ -20,12 +20,15 @@ let dayOneJournal = "foodjournal"
 // add at least one default tag, you'll have to modify the code below.
 // tags *can* have spaces
 
-let defaultTags = ["doeat", "journal alimentaire", "cétogène"]
+let defaultTags = ["doeat", "journal alimentaire" ]
 
 // the entry prefix
 
 let foodPrefix = "mangé:"
 let symptomPrefix = "symptôme:"
+let medicationPrefix = "pris:"
+let waterPrefix = "bu:"
+
 
 /* ********************************* */
 
@@ -86,9 +89,23 @@ if weHaveSymptomsTags {
 	outputString += "symptôme "
 }
 
+// weHaveMedicationTags is true if the `-m` prefix is present
+
+let weHaveMedicationTags = argument.hasPrefix("-m")
+if weHaveMedicationTags {
+	outputString += "médicament "
+}
+
+// weHaveWaterTags is true if the `-w` prefix is present
+
+let weHaveWaterTags = argument.hasPrefix("-w")
+if weHaveWaterTags {
+	outputString += "eau "
+}
+
 //-- Process tags if present, otherwise just pass the input
 
-if weHaveFoodTags || weHaveSymptomsTags {
+if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTags {
 	
 	// find the index of the tags separator
 	
@@ -188,6 +205,10 @@ if weHaveFoodTags || weHaveSymptomsTags {
 
 if weHaveSymptomsTags {
 	outputString += " -- new" + " \"" + symptomPrefix + " " + food + "\""
+} else if weHaveWaterTags {
+	outputString += " -- new" + " \"" + waterPrefix + " " + food + "\""
+} else if weHaveMedicationTags {
+	outputString += " -- new" + " \"" + medicationPrefix + " " + food + "\""
 } else {
 	outputString += " -- new" + " \"" + foodPrefix + " " + food + "\""
 }
