@@ -3,7 +3,7 @@
 import Foundation
 
 /* *********************************
-	 		DOEAT Script
+	 		DOHEALTH Script
    ********************************* */
 
 
@@ -14,13 +14,13 @@ import Foundation
 
 // the journal to log to in Day One
 
-let dayOneJournal = "foodjournal"
+let dayOneJournal = "santé"
 
 // the default tag(s) to add to all entries. If you don't
 // add at least one default tag, you'll have to modify the code below.
 // tags *can* have spaces
 
-let defaultTags = ["doeat", "journal alimentaire" ]
+let defaultTags = ["dohealth", "santé" ]
 
 // the entry prefix
 
@@ -28,6 +28,7 @@ let foodPrefix = "mangé:"
 let symptomPrefix = "symptôme:"
 let medicationPrefix = "pris:"
 let waterPrefix = "bu:"
+let measurePrefix = "mesuré:"
 
 
 /* ********************************* */
@@ -43,7 +44,7 @@ let waterPrefix = "bu:"
 // I initialize it with an example of something the user could enter
 // for testing. 
 
-var argument = "-s afternoon @cramps"
+var argument = "-l cetone @0.1 mmol/l"
 #if swift(>=4.0)
 	if CommandLine.arguments.count > 1 {
 		argument = CommandLine.arguments[1]
@@ -96,6 +97,13 @@ if weHaveMedicationTags {
 	outputString += "médicament "
 }
 
+// weHaveMedicationTags is true if the `-m` prefix is present
+
+let weHaveMeasureTags = argument.hasPrefix("-l")
+if weHaveMeasureTags {
+	outputString += "mesure "
+}
+
 // weHaveWaterTags is true if the `-w` prefix is present
 
 let weHaveWaterTags = argument.hasPrefix("-w")
@@ -105,7 +113,7 @@ if weHaveWaterTags {
 
 //-- Process tags if present, otherwise just pass the input
 
-if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTags {
+if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTags || weHaveMeasureTags {
 	
 	// find the index of the tags separator
 	
@@ -209,6 +217,8 @@ if weHaveSymptomsTags {
 	outputString += " -- new" + " \"" + waterPrefix + " " + food + "\""
 } else if weHaveMedicationTags {
 	outputString += " -- new" + " \"" + medicationPrefix + " " + food + "\""
+} else if weHaveMeasureTags {
+	outputString += " -- new" + " \"" + measurePrefix + " " + food + "\""
 } else {
 	outputString += " -- new" + " \"" + foodPrefix + " " + food + "\""
 }
