@@ -29,7 +29,7 @@ let symptomPrefix = "symptôme:"
 let medicationPrefix = "pris:"
 let waterPrefix = "bu:"
 let measurePrefix = "mesuré:"
-
+var entryPrefix = foodPrefix // default prefix
 
 /* ********************************* */
 
@@ -44,7 +44,13 @@ let measurePrefix = "mesuré:"
 // I initialize it with an example of something the user could enter
 // for testing. 
 
-var argument = "-l cetone @0.1 mmol/l"
+// var argument = "-l cetone @0.1 mmol/l"
+// var argument = "-m matin @vitamines B complex, B2, D, C, Omega-3"
+// var argument = "-s soir @ballonements"
+// var argument = "-w pm @700 ml d'eau"
+ var argument = "-t fête @gâteau au chocolat SG"
+
+
 #if swift(>=4.0)
 	if CommandLine.arguments.count > 1 {
 		argument = CommandLine.arguments[1]
@@ -88,6 +94,7 @@ let weHaveFoodTags = argument.hasPrefix("-t")
 let weHaveSymptomsTags = argument.hasPrefix("-s")
 if weHaveSymptomsTags {
 	outputString += "symptôme "
+	entryPrefix = symptomPrefix
 }
 
 // weHaveMedicationTags is true if the `-m` prefix is present
@@ -95,6 +102,7 @@ if weHaveSymptomsTags {
 let weHaveMedicationTags = argument.hasPrefix("-m")
 if weHaveMedicationTags {
 	outputString += "médicament "
+	entryPrefix = medicationPrefix
 }
 
 // weHaveMedicationTags is true if the `-m` prefix is present
@@ -102,6 +110,7 @@ if weHaveMedicationTags {
 let weHaveMeasureTags = argument.hasPrefix("-l")
 if weHaveMeasureTags {
 	outputString += "mesure "
+	entryPrefix = measurePrefix
 }
 
 // weHaveWaterTags is true if the `-w` prefix is present
@@ -109,6 +118,7 @@ if weHaveMeasureTags {
 let weHaveWaterTags = argument.hasPrefix("-w")
 if weHaveWaterTags {
 	outputString += "eau "
+	entryPrefix = waterPrefix
 }
 
 //-- Process tags if present, otherwise just pass the input
@@ -211,17 +221,19 @@ if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTa
 
 // Add the food/symptom to the output string (enclosed in quotes to prevent the CLI to interpret special characters)
 
-if weHaveSymptomsTags {
-	outputString += " -- new" + " \"" + symptomPrefix + " " + food + "\""
-} else if weHaveWaterTags {
-	outputString += " -- new" + " \"" + waterPrefix + " " + food + "\""
-} else if weHaveMedicationTags {
-	outputString += " -- new" + " \"" + medicationPrefix + " " + food + "\""
-} else if weHaveMeasureTags {
-	outputString += " -- new" + " \"" + measurePrefix + " " + food + "\""
-} else {
-	outputString += " -- new" + " \"" + foodPrefix + " " + food + "\""
-}
+//if weHaveSymptomsTags {
+//	outputString += " -- new" + " \"" + symptomPrefix + " " + food + "\""
+//} else if weHaveWaterTags {
+//	outputString += " -- new" + " \"" + waterPrefix + " " + food + "\""
+//} else if weHaveMedicationTags {
+//	outputString += " -- new" + " \"" + medicationPrefix + " " + food + "\""
+//} else if weHaveMeasureTags {
+//	outputString += " -- new" + " \"" + measurePrefix + " " + food + "\""
+//} else {
+//	outputString += " -- new" + " \"" + foodPrefix + " " + food + "\""
+//}
+
+outputString += " -- new" + " \"" + entryPrefix + " " + food + "\""
 
 // pass the result of the script, we suppress the newline character in the output
 
