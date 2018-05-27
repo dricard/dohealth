@@ -46,19 +46,39 @@ enum EntryType: String {
 }
 
 func entryType(for argument: String) -> (EntryType, Bool) {
-	if argument.hasPrefix("-t") {
-		return (.food, true)
-	} else if argument.hasPrefix("-s") {
-		return (.symptom, true)
-	} else if argument.hasPrefix("-m") {
-		return (.medication, true)
-	} else if argument.hasPrefix("-w") {
-		return (.water, true)
-	} else if argument.hasPrefix("-l") {
-		return (.measure, true)
+	
+	if let _ = argument.index(of: "@") {
+		if argument.hasPrefix("-t") {
+			return (.food, true)
+		} else if argument.hasPrefix("-s") {
+			return (.symptom, true)
+		} else if argument.hasPrefix("-m") {
+			return (.medication, true)
+		} else if argument.hasPrefix("-w") {
+			return (.water, true)
+		} else if argument.hasPrefix("-l") {
+			return (.measure, true)
+		} else {
+			// default case with no prefix
+			return (.food, false)
+		}
 	} else {
-		// default case with no prefix
-		return (.food, false)
+		// if we can't find an '@' character then the user forgot it and we can't separate
+		// the tags from the entry text, so we pass the whole thing as the entry text
+		if argument.hasPrefix("-t") {
+			return (.food, false)
+		} else if argument.hasPrefix("-s") {
+			return (.symptom, false)
+		} else if argument.hasPrefix("-m") {
+			return (.medication, false)
+		} else if argument.hasPrefix("-w") {
+			return (.water, false)
+		} else if argument.hasPrefix("-l") {
+			return (.measure, false)
+		} else {
+			// default case with no prefix
+			return (.food, false)
+		}
 	}
 }
 
@@ -78,7 +98,15 @@ func entryType(for argument: String) -> (EntryType, Bool) {
 // var argument = "-m matin @vitamines B complex, B2, D, C, Omega-3"
 // var argument = "-s soir @ballonements"
 // var argument = "-w pm @700 ml d'eau"
- var argument = "-t fête @gâteau au chocolat SG"
+// var argument = "-t fête @gâteau au chocolat SG"
+
+// these test arguments are missing the '@' character
+// var argument = "-l cetone 0.1 mmol/l"
+// var argument = "-m matin vitamines B complex, B2, D, C, Omega-3"
+// var argument = "-s soir ballonements"
+// var argument = "-w pm 700 ml d'eau"
+// var argument = "-t fête gâteau au chocolat SG"
+ var argument = "yogourt 0% avec amandes"
 
 
 #if swift(>=4.0)
@@ -204,17 +232,11 @@ if hasTags {
 			
 			outputString += tag + " "
 		}
-	} else {
-
-		// user forgot the '@' separator so just pass the input string (entryText) as received
-	
-		entryText = argument
-		
 	}
-		
+			
 } else {
 	
-	// no tags, so just pass the input string (entryText or symptom) as received
+	// no tags, so just pass the input string (entry text) as received
 	
 	entryText = argument
 }
