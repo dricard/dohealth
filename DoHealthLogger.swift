@@ -22,27 +22,57 @@ let dayOneJournal = "santé"
 
 let defaultTags = ["dohealth", "santé" ]
 
-// the entry prefix
+enum EntryType: String {
+	case food = "mangé:"
+	case symptom = "symptôme:"
+	case medication = "pris:"
+	case water = "bu:"
+	case measure = "mesuré:"
+	
+	var extraDefaultTags: String {
+		switch self {
+			case .food:
+				return ""
+			case .symptom:
+				return "symptôme "
+			case .medication:
+				return "médicament "
+			case .water:
+				return "eau "
+			case .measure:
+				return "mesure "
+		}
+	}
+}
 
-let foodPrefix = "mangé:"
-let symptomPrefix = "symptôme:"
-let medicationPrefix = "pris:"
-let waterPrefix = "bu:"
-let measurePrefix = "mesuré:"
-var entryPrefix = foodPrefix // default prefix
+func entryType(for argument: String) -> (EntryType, Bool) {
+	if argument.hasPrefix("-t") {
+		return (.food, true)
+	} else if argument.hasPrefix("-s") {
+		return (.symptom, true)
+	} else if argument.hasPrefix("-m") {
+		return (.medication, true)
+	} else if argument.hasPrefix("-w") {
+		return (.water, true)
+	} else if argument.hasPrefix("-l") {
+		return (.measure, true)
+	} else {
+		// default case with no prefix
+		return (.food, false)
+	}
+}
 
 /* ********************************* */
 
 
 // requires Swift 4.0
-// might work with Swift 2.0 but is untested
-// Will not work with Swift 1.0
 
 
 //-- get parameter input
 // `argument` holds the text entered in Alfred by the user
 // I initialize it with an example of something the user could enter
-// for testing. 
+// for testing. Use the various examples to test different cases.
+// In real use the argument will be replaced with what the user typed of course
 
 // var argument = "-l cetone @0.1 mmol/l"
 // var argument = "-m matin @vitamines B complex, B2, D, C, Omega-3"
@@ -62,9 +92,9 @@ var entryPrefix = foodPrefix // default prefix
 
 // MARK: - Properties
 
-// variable 'food' will hold the food passed in
+// variable 'entryText' will hold the food passed in
 
-var food  = ""
+var entryText  = ""
 
 // `outputString` is the result of the script that will be passed to the CLI, 
 // we initialize it with the Day One CLI command, setting the default journal
@@ -83,47 +113,17 @@ for defaulTag in defaultTags {
 
 // MARK: - Process input
 
-//-- Test if tags are present
+// check type of entry and if we need to process tags
 
-// weHaveFoodTags is true if the `-t` prefix is present
+let (type, hasTags) = entryType(for: argument)
 
-let weHaveFoodTags = argument.hasPrefix("-t")
+// add extra default tags for entry type
 
-// weHaveSymptomsTags is true if the `-s` prefix is present
-
-let weHaveSymptomsTags = argument.hasPrefix("-s")
-if weHaveSymptomsTags {
-	outputString += "symptôme "
-	entryPrefix = symptomPrefix
-}
-
-// weHaveMedicationTags is true if the `-m` prefix is present
-
-let weHaveMedicationTags = argument.hasPrefix("-m")
-if weHaveMedicationTags {
-	outputString += "médicament "
-	entryPrefix = medicationPrefix
-}
-
-// weHaveMedicationTags is true if the `-m` prefix is present
-
-let weHaveMeasureTags = argument.hasPrefix("-l")
-if weHaveMeasureTags {
-	outputString += "mesure "
-	entryPrefix = measurePrefix
-}
-
-// weHaveWaterTags is true if the `-w` prefix is present
-
-let weHaveWaterTags = argument.hasPrefix("-w")
-if weHaveWaterTags {
-	outputString += "eau "
-	entryPrefix = waterPrefix
-}
+outputString += type.extraDefaultTags
 
 //-- Process tags if present, otherwise just pass the input
 
-if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTags || weHaveMeasureTags {
+if hasTags {
 	
 	// find the index of the tags separator
 	
@@ -134,9 +134,9 @@ if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTa
 		
 		let tags = String(argument.prefix(upTo: endOfTags)).split(separator: " ").map{ String($0) }
 		
-		// Now process the food part to remove the end of tags marker
+		// Now process the entryText part to remove the end of tags marker
 		
-		// get the food part of the input
+		// get the entryText part of the input
 		
 		let foodSection = String(argument.suffix(from: endOfTags))
 		
@@ -144,15 +144,15 @@ if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTa
 		
 		let endTagIndex = foodSection.index(of: "@")!
 		
-		// The food proper starts after the tags separator
+		// The entryText proper starts after the tags separator
 		
 		let tagIndex = foodSection.index(after: endTagIndex)
 
-		// get the food
+		// get the entryText
 		
-		food = String(foodSection.suffix(from: tagIndex))
+		entryText = String(foodSection.suffix(from: tagIndex))
 		
-		// Now we have the food, we then process and format the tags
+		// Now we have the entryText, we then process and format the tags
 		// Add the tags to the output string separated by spaces
 		// skipping the first one which is the `-t` marker
 			
@@ -206,22 +206,22 @@ if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTa
 		}
 	} else {
 
-		// user forgot the '@' separator so just pass the input string (food) as received
+		// user forgot the '@' separator so just pass the input string (entryText) as received
 	
-		food = argument
+		entryText = argument
 		
 	}
 		
 } else {
 	
-	// no tags, so just pass the input string (food or symptom) as received
+	// no tags, so just pass the input string (entryText or symptom) as received
 	
-	food = argument
+	entryText = argument
 }
 
-// Add the food/symptom to the output string (enclosed in quotes to prevent the CLI to interpret special characters)
+// Add the entryText/symptom to the output string (enclosed in quotes to prevent the CLI to interpret special characters)
 
-outputString += " -- new" + " \"" + entryPrefix + " " + food + "\""
+outputString += " -- new" + " \"" + type.rawValue + " " + entryText + "\""
 
 // pass the result of the script, we suppress the newline character in the output
 
