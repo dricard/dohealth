@@ -221,18 +221,6 @@ if weHaveFoodTags || weHaveSymptomsTags || weHaveWaterTags || weHaveMedicationTa
 
 // Add the food/symptom to the output string (enclosed in quotes to prevent the CLI to interpret special characters)
 
-//if weHaveSymptomsTags {
-//	outputString += " -- new" + " \"" + symptomPrefix + " " + food + "\""
-//} else if weHaveWaterTags {
-//	outputString += " -- new" + " \"" + waterPrefix + " " + food + "\""
-//} else if weHaveMedicationTags {
-//	outputString += " -- new" + " \"" + medicationPrefix + " " + food + "\""
-//} else if weHaveMeasureTags {
-//	outputString += " -- new" + " \"" + measurePrefix + " " + food + "\""
-//} else {
-//	outputString += " -- new" + " \"" + foodPrefix + " " + food + "\""
-//}
-
 outputString += " -- new" + " \"" + entryPrefix + " " + food + "\""
 
 // pass the result of the script, we suppress the newline character in the output
