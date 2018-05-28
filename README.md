@@ -38,11 +38,11 @@ The default entry is for something you ate and the script will create a journal 
 
 There are five types of things you can track with DoHealth:
 
-- food (what you ate)
-- symptoms (how you feel, cramps, headache, etc.)
-- medication (what you took, including vitamines or food supplements)
-- water (how much you drank if you want to track this — and you should!)
-- measurements (things like blood sugar, ketone levels, weight, blood pressure, etc.)
+- **food** (what you ate)
+- **symptoms** (how you feel, cramps, headache, etc.)
+- **medication** (what you took, including vitamines or food supplements)
+- **water** (how much you drank if you want to track this — and you should!)
+- **measurements** (things like _blood sugar_, _ketone levels_, _weight_, _blood pressure_, etc.)
 
 Each of those has a specific prefix to use when invoking the script, and each one will begin the journal entry with a different prefix as well as including specific tags in addition to the default ones.
 
@@ -52,17 +52,19 @@ A 'option flag' to determine which type of entry it is, followed by 0 or more op
 
 Examples:
 
-A measurement entry:
--l cetone @0.1 mmol/l
+A measurement entry: `-l cetone @0.1 mmol/l`
 
-A medication entry:
--m matin @vitamines B complex, B2, D, C, Omega-3
+A medication entry: `-m matin @vitamines B complex, B2, D, C, Omega-3`
 
 #### Entry types syntax
 
 ##### Food
 
 `-t optinal_tag @food eaten`
+
+Food is the default entry type, so if you don't need to add optional tags you can simply use this:
+
+`food eaten` 
 
 ##### Symptom
 
@@ -90,7 +92,7 @@ This script is made for **Swift 4.0**.
 
 #### Modifying the script
 
-You can modify for example the default journal to log into, the default tags, etc. by modifying the script in the included `DoHealthLogger.swift` file. You must then compile the script and make it executable and put it in the workflow folder.
+You can modify for example the default journal to log into, the default tags, etc. by modifying the script in the included `DoHealthLogger.swift` file. You must then compile the script and make it executable and put it in the workflow folder. I use [CodeRunner][coderunner] to edit this script (and most scripts I write). It has a debugger with build-in console and creates the executable when you run the script.
 
 #### How to contribute
 
@@ -120,7 +122,7 @@ This is based on [https://github.com/middleman/middleman-heroku/blob/master/CONT
 
 #### License
 
-Dolog is Copyright © 2017 Denis Ricard. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+DoHealth is Copyright © 2018 Denis Ricard. It is free software, and may be redistributed under the terms specified in the LICENSE file.
 
 #### About
 
@@ -131,3 +133,4 @@ I'm an iOS developer. You can find my web site at [hexaedre.com](http://hexaedre
 [workflows]: https://www.alfredapp.com/workflows/
 [powerpack]: https://www.alfredapp.com/powerpack/
 [dolog]: http://hexaedre.com/scripts/dolog/
+[coderunner]: https://coderunnerapp.com
