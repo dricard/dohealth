@@ -1,56 +1,88 @@
-# DOLOG Script for Alfred.app
+# DOHEALTH Script for Alfred.app
 
 [![Swift 4.0](https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat)](https://developer.apple.com/swift/)  [![Twitter](https://img.shields.io/badge/twitter-@hexaedre-blue.svg?style=flat)](https://twitter.com/hexaedre)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**DOLOG** is a script, written in **Swift**, that is used in an [Alfred][alfred] / [workflow][workflows].
+**DOHEALTH** is a script, written in **Swift**, that is used in an [Alfred][alfred] / [workflow][workflows] to write health informaiton to a [Day One 2][dayone] journal.
 
-#### What it does
+### What it does
 
-It takes an input string and creates an entry in the `log` journal of [Day One][dayone] with the content of the entry formated as `completed task:` plus the input string.
+It takes an input string as part of an Alfred action and creates an entry in a health journalyou specify in [Day One][dayone] with the content of the entry formated with a prefix depending on the type of data you're logging, i.e., `eaten:`, or `drank:` plus the input string and with optional tags.
 
-The idea is to be able to quickly log the tasks that you complete during the day with as little friction as possible. Many things can be logged automatically with IFTTT, but some things fall outside of the automation capabilities. This is for those tasks you complete.
+The idea is to be able to quickly log health related information during the day with as little friction as possible. This can be used later to see patterns in your habits (eating some food is followed by these symptoms, etc.), or to report to a nutritionist or doctor. Many things can be logged automatically with IFTTT (like weight measurement taken with a smart scale, which can be directed to log into the same health journal), but some things fall outside of the automation capabilities. This is for those things you want to track.
 
-#### Installation
+### Installation
 
 You need a few things to make use of this script:
 
-##### What you need
+#### What you need
 
 - you need the latest version of [Day One 2][dayone]
-- you must have installed the Day One CLI: menu `/Day One/Install Command Line Tools.../` and follow the instructions.
+- you must have installed the Day One CLI (command line interface): menu `/Day One/Install Command Line Tools.../` and follow the instructions.
 - you need to have [Aldred][alfred] installed, with a [PowerPack][powerpack] license (required to use [workflows][workflows])
 
-##### Installation
+#### Installation
 
-- download and unzip the `dolog` package.
+- download and unzip the `dohealth` package.
 - double-click the `.alfredworkflow` file to install the workflow in Alfred.
 - open the workflow and double-click the `external script` module.
 - click the `open workflow folder in finder` button to the left of the `cancel`button. ![button](http://hexaedre.com/resources/alfredOpenFolder.png)
-- copy the `DayOneLoggerPlus` file from the `dolog` package to the workflow folder.
+- copy the `DoHealthLogger` file (the one without extension) from the `dohealth` package to the workflow folder.
 - you can close the workflow folder and Alfred's preferences window.
 - you're good to go!
 
 #### Usage
 
-Invoke Alfred (for me this is `⌘-space`), type `dolog` (although I can usually just type `do`) then `return` to select the workflow, then type the text you want to log, and press `return`.
+Invoke Alfred (for me this is `⌘-space`), type `dohealth` (although I can usually just type `doh`) then `return` to select the workflow, then type the text you want to log, and press `return`.
 
-##### Optional tags
+The default entry is for something you ate and the script will create a journal entry stating that you ate, with the default tags specified in the script. So `⌘-space` `doh` `return` `a muffin and a glass of milk` `return` will create a journal entry `eaten: a muffin and a glass of milk` with tags `dohealth` and `health` for instance.
 
-The input string can include tags for the Day One entry. The format to use is the following:
+There are five types of things you can track with DoHealth:
 
-`-t tag1 tag_2 tag3 @ <completed task text>`
+- food (what you ate)
+- symptoms (how you feel, cramps, headache, etc.)
+- medication (what you took, including vitamines or food supplements)
+- water (how much you drank if you want to track this — and you should!)
+- measurements (things like blood sugar, ketone levels, weight, blood pressure, etc.)
 
-To include tags, the input string must start with `-t `, followed by one or more space-separated tags, then the `end of tags` special character: `@`, then the text of the completed task.
+Each of those has a specific prefix to use when invoking the script, and each one will begin the journal entry with a different prefix as well as including specific tags in addition to the default ones.
 
-To include spaces in tags, use the underscore `_` character where the space should be and the script will convert those while processing the tags. For example, the following:
+The pattern is always the same for each type:
 
-`-t day_one @ something` 
+A 'option flag' to determine which type of entry it is, followed by 0 or more optional tags, then the '@' character and the entry text.
 
-Will create an entry with a tag `day one`
+Examples:
+
+A measurement entry:
+-l cetone @0.1 mmol/l
+
+A medication entry:
+-m matin @vitamines B complex, B2, D, C, Omega-3
+
+#### Entry types syntax
+
+##### Food
+
+`-t optinal_tag @food eaten`
+
+##### Symptom
+
+`-s optinal_tag @symptom observed`
+
+##### Medication
+
+`-m optinal_tag @medication taken`
+
+##### Water
+
+`-w optinal_tag @water drank`
+
+##### Measurement
+
+`-l optinal_tag @measurement results`
 
 #### Default tags
 
-All entries will have the `completed tasks` and the `dolog` tags added by default.
+All entries will have the `santé` and the `dohealth` tags added by default.
 
 #### Swift version
 
@@ -58,7 +90,7 @@ This script is made for **Swift 4.0**.
 
 #### Modifying the script
 
-You can modify for example the default journal to log into, the default tags, etc. by modifying the script in the included `DayOneLoggerPlus.swift` file. You must then compile the script and make it executable and put it in the workflow folder.
+You can modify for example the default journal to log into, the default tags, etc. by modifying the script in the included `DoHealthLogger.swift` file. You must then compile the script and make it executable and put it in the workflow folder.
 
 #### How to contribute
 
