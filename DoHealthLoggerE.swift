@@ -4,23 +4,24 @@ import Foundation
 
 /* *********************************
 	 		DOHEALTH Script
+			English version
    ********************************* */
 
 
 /* *********************************
-	 MODIFY THESE PROPERTIES
+	 MODIFY THESE 3 PROPERTIES
 	         AS NEEDED
 ********************************* */
 
 // the journal to log to in Day One
 
-let dayOneJournal = "santé"
+let dayOneJournal = "health"
 
 // the default tag(s) to add to all entries. If you don't
 // add at least one default tag, you'll have to modify the code below.
 // tags *can* have spaces
 
-let defaultTags = ["dohealth", "santé" ]
+let defaultTags = ["dohealth", "health" ]
 
 /* ********************************* */
 
@@ -34,23 +35,23 @@ let defaultTags = ["dohealth", "santé" ]
 // for testing. Use the various examples to test different cases.
 // In real use the argument will be replaced with what the user typed of course
 
-// var argument = "-l cetone @0.1 mmol/l"
-// var argument = "-m matin @vitamines B complex, B2, D, C, Omega-3"
-// var argument = "-s soir @ballonements"
-// var argument = "-w pm @700 ml d'eau"
-// var argument = "-t fête @gâteau au chocolat SG"
- var argument = "-2 @saumon avec salade de kale et avocats"
-// var argument = "-1 @œuf, avocats et café"
-// var argument = "-3 @bœuf avec asperges et champignons"
-// var argument = "-0 @noisettes et amandes"
+// var argument = "-l ketone @0.1 mmol/l"
+// var argument = "-m morning @vitamins B complex, B2, D, C, Omega-3"
+// var argument = "-s evening @cramps"
+// var argument = "-w pm @700 ml of water"
+// var argument = "-t anniversary @chocolat cake"
+// var argument = "-t 2 @salmon with kale and avocados"
+ var argument = "-t 1 @egg, avocado and coffee"
+// var argument = "-t 3 @beef with asparagus and mushrooms"
+// var argument = "-t 0 @hazelnuts and almonds"
 
 // these test arguments are missing the '@' character
-// var argument = "-l cetone 0.1 mmol/l"
-// var argument = "-m matin vitamines B complex, B2, D, C, Omega-3"
-// var argument = "-s soir ballonements"
-// var argument = "-w pm 700 ml d'eau"
-// var argument = "-t fête gâteau au chocolat SG"
-// var argument = "yogourt 0% avec amandes"
+// var argument = "-l ketone 0.1 mmol/l"
+// var argument = "-m morning vitamins B complex, B2, D, C, Omega-3"
+// var argument = "-s evening cramps"
+// var argument = "-w pm 700 ml of water"
+// var argument = "-t anniversary chocolat cake"
+// var argument = "yogourt 0% with almonds"
 
 
 #if swift(>=4.0)
@@ -75,24 +76,24 @@ var entryText  = ""
 var outputString: String = "dayone2 --journal "
 
 enum EntryType: String {
-	case food = "mangé:"
-	case symptom = "symptôme:"
-	case medication = "pris:"
-	case water = "bu:"
-	case measure = "mesuré:"
+	case food = "eaten:"
+	case symptom = "symptoms:"
+	case medication = "taken:"
+	case water = "drank:"
+	case measure = "measured:"
 	
 	var extraDefaultTags: String {
 		switch self {
 			case .food:
 				return ""
 			case .symptom:
-				return "symptôme "
+				return "symptom "
 			case .medication:
-				return "médicament "
+				return "medication "
 			case .water:
-				return "eau "
+				return "water "
 			case .measure:
-				return "mesure "
+				return "measure "
 		}
 	}
 }
@@ -100,7 +101,7 @@ enum EntryType: String {
 func entryType(for argument: String) -> (EntryType, Bool) {
 	
 	if let _ = argument.index(of: "@") {
-		if argument.hasPrefix("-t") || argument.hasPrefix("-1") || argument.hasPrefix("-2") || argument.hasPrefix("-3") || argument.hasPrefix("-0") {
+		if argument.hasPrefix("-t") {
 			return (.food, true)
 		} else if argument.hasPrefix("-s") {
 			return (.symptom, true)
@@ -117,7 +118,7 @@ func entryType(for argument: String) -> (EntryType, Bool) {
 	} else {
 		// if we can't find an '@' character then the user forgot it and we can't separate
 		// the tags from the entry text, so we pass the whole thing as the entry text
-		if argument.hasPrefix("-t") || argument.hasPrefix("-1") || argument.hasPrefix("-2") || argument.hasPrefix("-3") || argument.hasPrefix("-0") {
+		if argument.hasPrefix("-t") {
 			return (.food, false)
 		} else if argument.hasPrefix("-s") {
 			return (.symptom, false)
@@ -132,24 +133,6 @@ func entryType(for argument: String) -> (EntryType, Bool) {
 			return (.food, false)
 		}
 	}
-}
-
-func additionalMealTags(for argument: String) -> String {
-  
-    // here we replace the shorthands for breakfast, lunch, etc.
-    if argument.hasPrefix("-1") {
-        return "déjeuner "
-    } else if argument.hasPrefix("-2") {
-        return "dîner "
-    } else if argument.hasPrefix("-3") {
-        return "souper "
-    } else if argument.hasPrefix("-0") {
-        return "collation"
-    } else {
-        return ""
-    }
-    
-
 }
 
 // MARK: - Utilities
@@ -206,11 +189,6 @@ let (type, hasTags) = entryType(for: argument)
 
 outputString += type.extraDefaultTags
 
-// Add special tags if prefix was a meal option
-
-outputString += additionalMealTags(for: argument)
-
-
 //-- Process tags if present, otherwise just pass the input
 
 if hasTags {
@@ -253,6 +231,18 @@ if hasTags {
 			var processedTag = replaceSpaces(in: tag)
 			processedTag = removeSpecialCharacters(in: processedTag)
 
+			// here we replace the shorthands for breakfast, lunch, etc.
+			
+			if tag == "1" {
+				processedTag = "breakfast"
+			} else if tag == "2" {
+				processedTag = "lunch"
+			} else if tag == "3" {
+				processedTag = "dinner"
+			} else if tag == "0" {
+				processedTag = "snack"
+			}
+			
 			// add this processed tag to the output string
 			
 			outputString += processedTag + " "
